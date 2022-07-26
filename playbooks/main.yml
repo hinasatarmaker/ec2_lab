@@ -1,0 +1,38 @@
+---
+- name: Install apache
+  hosts: web
+  become: true
+  tasks:
+    - name: Create new directory
+      ansible.builtin.file:
+        path: /var/www/hina
+        state: directory
+    
+    - name: Copy the index.html file in folder
+      copy:
+        src: /var/www/html/index.html
+        dest: /var/www/web_files/index.html
+        remote_src: yes
+    
+    - name: Copy configuration file
+      copy:
+        # src: /ec2_lab/plabooks/files/hina.conf
+        src: /etc/apache2/sites-available/000-default.conf
+        dest: /etc/apache2/sites-available/hina.conf
+        remote_src: yes 
+
+    - name: enable hina.conf file
+      command:
+        a2ensite hina.conf
+    
+    - name: disable 000-default.conf file
+      command:
+        a2dissite 000-default.conf
+    
+    - name: Restart apache server
+      service:
+        name: apache2
+        state: restarted
+    
+
+ 
